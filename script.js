@@ -71,6 +71,12 @@ _img.alpha = 0;
 imgContainer.addChild(_img);
 parentContainer.addChild(imgContainer);
 
+const _imgContainer = new PIXI.Container();
+_imgContainer.alpha = 0;
+___img.alpha = 0;
+imgContainer.addChild(___img);
+parentContainer.addChild(_imgContainer);
+
 let frameCounter = 0;
 function animate(delta) {
     let speed = Math.random()*(1-0.25)+0.25;
@@ -139,8 +145,10 @@ function draw() {
         
     }
     if (sensorVal == 'w') {
-        parentContainer.addChild(___img);
-        
+        //parentContainer.addChild(___img);
+        if(___img.alpha == 0){
+          setupAnimation(_imgContainer, ___img);
+      }        
     }
     if (sensorVal == '1' && !experienceInProgress) {
         startExperience();
