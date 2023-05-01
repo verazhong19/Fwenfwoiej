@@ -6,51 +6,70 @@ const app = new PIXI.Application({
     width: window.innerWidth,
     height: window.innerHeight
 });
-const texture = PIXI.Texture.from('bedroom.jpg');
-const _bedroom = PIXI.Texture.from('_bedroom_b.png');
+const texture = PIXI.Texture.from('assets/floor.png');
+const baseLayer = PIXI.Texture.from('assets/base.png');
+const _bed = PIXI.Texture.from('assets/bed.png');
 const _bedroom_desk = PIXI.Texture.from('_bedroom_desk.png');
-const _bedroom_dresser = PIXI.Texture.from('_bedroom_dresser.png');
-const img = new PIXI.Sprite(texture);
-const _img = new PIXI.Sprite(_bedroom);
-const __img = new PIXI.Sprite(_bedroom_desk);
-const ___img = new PIXI.Sprite(_bedroom_dresser);
+const _dresser = PIXI.Texture.from('assets/dresser.png');
+const floor = new PIXI.Sprite(texture);
+const base = new PIXI.Sprite(baseLayer);
+const bed = new PIXI.Sprite(_bed);
+const dresser = new PIXI.Sprite(_dresser);
+const baseBed = new PIXI.Sprite(_bed);
+const baseDresser = new PIXI.Sprite(_dresser);
 
 document.body.appendChild(app.view);
 
-img.x = app.renderer.width / 2;
-img.y = app.renderer.height / 2;
-img.anchor.x = 0.5;
-img.anchor.y = 0.5;
-img.scale.x = 0.28;
-img.scale.y = 0.28;
+floor.x = app.renderer.width / 2;
+floor.y = app.renderer.height / 2;
+floor.anchor.x = 0.5;
+floor.anchor.y = 0.5;
+floor.scale.x = 0.28;
+floor.scale.y = 0.28;
 
+base.x = app.renderer.width / 2;
+base.y = app.renderer.height / 2;
+base.anchor.x = 0.5;
+base.anchor.y = 0.5;
+base.scale.x = 0.28;
+base.scale.y = 0.28;
 
-_img.x = app.renderer.width / 2;
-_img.y = app.renderer.height / 2;
-_img.anchor.x = 0.5;
-_img.anchor.y = 0.5;
-_img.scale.x = 0.28;
-_img.scale.y = 0.28;
+bed.x = app.renderer.width / 2;
+bed.y = app.renderer.height / 2;
+bed.anchor.x = 0.5;
+bed.anchor.y = 0.5;
+bed.scale.x = 0.28;
+bed.scale.y = 0.28;
 
-__img.x = app.renderer.width / 2;
-__img.y = app.renderer.height / 2;
-__img.anchor.x = 0.5;
-__img.anchor.y = 0.5;
-__img.scale.x = 0.28;
-__img.scale.y = 0.28;
+dresser.x = app.renderer.width / 2;
+dresser.y = app.renderer.height / 2;
+dresser.anchor.x = 0.5;
+dresser.anchor.y = 0.5;
+dresser.scale.x = 0.28;
+dresser.scale.y = 0.28;
 
-___img.x = app.renderer.width / 2;
-___img.y = app.renderer.height / 2;
-___img.anchor.x = 0.5;
-___img.anchor.y = 0.5;
-___img.scale.x = 0.28;
-___img.scale.y = 0.28;
+baseBed.x = app.renderer.width / 2;
+baseBed.y = app.renderer.height / 2;
+baseBed.anchor.x = 0.5;
+baseBed.anchor.y = 0.5;
+baseBed.scale.x = 0.28;
+baseBed.scale.y = 0.28;
+
+baseDresser.x = app.renderer.width / 2;
+baseDresser.y = app.renderer.height / 2;
+baseDresser.anchor.x = 0.5;
+baseDresser.anchor.y = 0.5;
+baseDresser.scale.x = 0.28;
+baseDresser.scale.y = 0.28;
 
 const parentContainer = new PIXI.Container();
 app.stage.addChild(parentContainer);
 
 const baseContainer = new PIXI.Container();
-baseContainer.addChild(img);
+baseContainer.addChild(floor);
+baseContainer.addChild(base);
+baseContainer.addChild(baseBed);
+baseContainer.addChild(baseDresser);
 parentContainer.addChild(baseContainer)
 //app.stage.addChild(img);
 
@@ -63,18 +82,17 @@ displacementSprite.scale.set(1.8)
 baseContainer.addChild(displacementSprite);
 baseContainer.filters = [displacementFilter]
 
-parentContainer.addChild(__img);
 
 const imgContainer = new PIXI.Container();
 imgContainer.alpha = 0;
-_img.alpha = 0;
-imgContainer.addChild(_img);
+bed.alpha = 0;
+imgContainer.addChild(bed);
 parentContainer.addChild(imgContainer);
 
 const _imgContainer = new PIXI.Container();
 _imgContainer.alpha = 0;
-___img.alpha = 0;
-imgContainer.addChild(___img);
+dresser.alpha = 0;
+imgContainer.addChild(dresser);
 parentContainer.addChild(_imgContainer);
 
 let frameCounter = 0;
@@ -104,7 +122,7 @@ tl.to(app.view, 0.7, { ease: Expo.easeInOut }, "-=4");
 
 let experienceInProgress = false;
 
-function setupAnimation(container, targetImage) {
+function setupAnimation(container, targetImage, removedItem) {
     let _displacementSprite = PIXI.Sprite.from("map_7.png");
     _displacementSprite.texture.baseTexture.wrapMode = PIXI.WRAP_MODES.REPEAT;
 
@@ -125,8 +143,15 @@ function setupAnimation(container, targetImage) {
     _tl.to(container, 2, { alpha: 1, ease: Expo.easeInOut }, "-=2");
     _tl.to(targetImage, 2, { alpha: 1, ease: Expo.easeInOut }, "-=2");
 
+    _tl.add(() => {
+          setTimeout( () => baseContainer.removeChild(removedItem), 2000 );
+          
+  });
+
     // Play the animation
     _tl.play();
+
+
 }
 
 
@@ -138,16 +163,17 @@ function setup() {
 
 function draw() {
     if (sensorVal == 'q') {
-        if(_img.alpha == 0){
-            setupAnimation(imgContainer, _img);
+        if(bed.alpha == 0){
+            setupAnimation(imgContainer, bed, baseBed);
+            //baseContainer.removeChild(baseBed);
         }
         
         
     }
     if (sensorVal == 'w') {
         //parentContainer.addChild(___img);
-        if(___img.alpha == 0){
-          setupAnimation(_imgContainer, ___img);
+        if(dresser.alpha == 0){
+          setupAnimation(_imgContainer, dresser, baseDresser);
       }        
     }
     if (sensorVal == '1' && !experienceInProgress) {
